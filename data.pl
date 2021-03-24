@@ -1,5 +1,6 @@
 :- module(data, [
     unknown_word/1,
+    learn_unknown_words/1,
     d_/1,
     deg_/1,
     adj_/1,
@@ -30,9 +31,50 @@ unknown_word(X) :-
     !,
     throw(instantiation_error(X)).
 
+% learn_unknown_words(+Words)
+%  For each word that is not defined in this module, it will
+%  ask the user to categorize the word, then it will learn
+%  that categorization.
+
+learn_unknown_words(Words) :-
+    include(unknown_word, Words, UnknownWords),
+    write('These words are unknown: '),
+    write_canonical(UnknownWords), nl,
+    learn_unknown_words_rec(UnknownWords).
+
+learn_unknown_words([]).
+
+learn_unknown_words_rec([]).
+
+learn_unknown_words_rec([Word | Words]) :-
+    write('-'), tab(2), write(Word), nl,
+    Pos = [
+        d_,
+        deg_,
+        adj_,
+        n_,
+        p_,
+        pn_,
+        nm_,
+        comp_,
+        v_
+    ],
+    tab(4), write('Part-of-speech tags: '), write_canonical(Pos), nl,
+    tab(4), write('Enter part of speech (followed by ''.''): '),
+    read(PartOfSpeech),
+    Fact =.. [PartOfSpeech, Word],
+    learn_fact(Fact),
+    learn_unknown_words_rec(Words).
+
+learn_fact(Fact) :-
+    assertz(Fact), % Save it to working memory.
+    open('data.pl', append, Stream),
+    write_term(Stream, Fact, [nl, fullstop]),
+    close(Stream).
 
 % Determiners
 :- dynamic d_/1.
+:- discontiguous d_/1.
 d_(the).
 d_(a).
 d_(an).
@@ -44,6 +86,7 @@ d_(three).
 
 % Degrees
 :- dynamic deg_/1.
+:- discontiguous deg_/1.
 deg_(very).
 deg_(surprisingly).
 deg_(slightly).
@@ -55,6 +98,7 @@ deg_(annoyingly).
 
 % Adjectives
 :- dynamic adj_/1.
+:- discontiguous adj_/1.
 adj_(good).
 adj_(grey).
 adj_(young).
@@ -64,9 +108,11 @@ adj_(hairy).
 adj_(fat).
 adj_(noisy).
 adj_(unexpected).
+adj_(amazing).
 
 % Nouns
 :- dynamic n_/1.
+:- discontiguous n_/1.
 n_(boy).
 n_(girl).
 n_(dog).
@@ -81,6 +127,7 @@ n_(fact).
 
 % Prepositions
 :- dynamic p_/1.
+:- discontiguous p_/1.
 p_(into).
 p_(in).
 p_(from).
@@ -93,6 +140,7 @@ p_(around).
 
 % Pronouns
 :- dynamic pn_/1.
+:- discontiguous pn_/1.
 pn_(i).
 pn_(me).
 pn_(you).
@@ -105,9 +153,12 @@ pn_(them).
 pn_(it).
 pn_(we).
 pn_(yall).
+pn_(everyone).
+pn_(everybody).
 
 % Names
 :- dynamic nm_/1.
+:- discontiguous nm_/1.
 nm_(jack).
 nm_(jill).
 nm_(mary).
@@ -117,10 +168,12 @@ nm_(fido).
 
 % Complementizers
 :- dynamic comp_/1.
+:- discontiguous comp_/1.
 comp_(that).
 
 % Verbs
 :- dynamic v_/1.
+:- discontiguous v_/1.
 v_(fly).
 v_(believed).
 v_(surprised).
@@ -132,3 +185,18 @@ v_(leave).
 v_(gave).
 v_(chased).
 v_(slept).
+v_(said).
+v_(revealed).
+
+%%%%%%%%%%%%% HERE BE RANDOM LEARNED DEFINITIONS %%%%%%%%%%%%%%%%%%
+% Concern: if I ever need to update all occurrances of one
+% of these facts, its gonna be trickier to see where they
+% all live cause these are all jumbled on top of each
+% other. :/ Oh well. Just use 'find and replace'.
+
+v_(passed).
+n_(car).
+v_(walked).
+p_(past).
+v_(went).
+n_(store).
