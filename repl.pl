@@ -2,6 +2,7 @@
 :- use_module(tokenize).
 :- use_module(data).
 :- use_module(syntax, [s//1]).
+:- use_module(tests, [test_all/0]). % Allow testing from top-level.
 
 % The main loop.
 repl :-

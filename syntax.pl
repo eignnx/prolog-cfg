@@ -1,4 +1,4 @@
-:- module(syntax, [s//1, np//1, vp//1]).
+:- module(syntax, [s//1, s1//1, d//1, np//1, vp//1, pp//1]).
 :- use_module(data).
 
 np(np(Det, Noun1)) --> d(Det), n1(Noun1).
@@ -25,7 +25,7 @@ adj(adj(X)) --> [X], { data:adj_(X) }.
 
 n(n(X)) --> [X], { data:n_(X) }.
 
-pp(pp(p(P), Np)) --> [P], { data:p_(P) }, np(Np).
+pp(pp(p(P), Np)) --> { data:p_(P) }, [P], np(Np).
 
 pn(pn(Pn)) --> [Pn], { data:pn_(Pn) }.
 
@@ -46,18 +46,24 @@ vp(VpTree) --> v(V), vp_foll(V->VpTree).
 
 % vp --> v, (np), (pp), (np), (pp), (s1).
 % TODO: THIS IS NOT GOOD ENOUGH, AND IT'S NOT EVEN COVERED COMPLETELY.
-vp_foll(V->vp(V, Np1, Pp1, Np2, Pp2, S1)) --> np(Np1), pp(Pp1), np(Np2), pp(Pp2), s1(S1), !.
-vp_foll(V->vp(V, Np1, Pp1, Np2, Pp2)) --> np(Np1), pp(Pp1), np(Np2), pp(Pp2), !.
-vp_foll(V->vp(V, Np1, Pp1, Np2, S1)) --> np(Np1), pp(Pp1), np(Np2), s1(S1), !.
-vp_foll(V->vp(V, Np1, Pp1, Np2)) --> np(Np1), pp(Pp1), np(Np2), !.
-vp_foll(V->vp(V, Np1, Pp1, S1)) --> np(Np1), pp(Pp1), s1(S1), !.
-vp_foll(V->vp(V, Np1, Pp1)) --> np(Np1), pp(Pp1), !.
-vp_foll(V->vp(V, Np1, S1)) --> np(Np1), s1(S1), !.
-vp_foll(V->vp(V, Np1)) --> np(Np1), !.
-vp_foll(V->vp(V)) --> [], !.
+vp_foll(V->vp(V, Np1, Pp1, Np2, Pp2, S1)) --> np(Np1), pp(Pp1), np(Np2), pp(Pp2), s1(S1).
+vp_foll(V->vp(V, Np1, Pp1, Np2, Pp2)) --> np(Np1), pp(Pp1), np(Np2), pp(Pp2).
+vp_foll(V->vp(V, Np1, Pp1, Np2, S1)) --> np(Np1), pp(Pp1), np(Np2), s1(S1).
+vp_foll(V->vp(V, Np1, Pp1, Np2)) --> np(Np1), pp(Pp1), np(Np2).
+vp_foll(V->vp(V, Np1, Pp1, S1)) --> np(Np1), pp(Pp1), s1(S1).
+vp_foll(V->vp(V, Np1, Pp1)) --> np(Np1), pp(Pp1).
+vp_foll(V->vp(V, Pp, Np1, S1)) --> pp(Pp), np(Np1), s1(S1).
+vp_foll(V->vp(V, Np1, S1)) --> np(Np1), s1(S1).
+% 'Max said [that all birds fly]'
+vp_foll(V->vp(V, S1)) --> s1(S1).
+vp_foll(V->vp(V, Np1)) --> np(Np1).
+% 'I walked [past the car]'
+vp_foll(V->vp(V, Pp)) --> pp(Pp).
 % 'John [seemed very old]'
 vp_foll(V->vp(V, Adjp)) --> adjp(Adjp).
 % 'John [wanted to leave]'
 vp_foll(V->vp(V, Vp)) --> [to], vp(Vp).
+% 'Jesus wept []'
+vp_foll(V->vp(V)) --> [].
 
 v(v(Verb)) --> [Verb], { data:v_(Verb) }.

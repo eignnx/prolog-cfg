@@ -2,14 +2,8 @@
 :- use_module(syntax, [s//1]).
 
 test_all :-
-    Inputs = [
-        [max,revealed,to,everyone,the,amazing,fact,that,birds,fly],
-        [the,dog,slept],
-        [max,said,birds,fly],
-        [i,walked,past,the,car],
-        [i,passed,the,car]
-    ],
-    test_all_parse(Inputs, []).
+    findall(Tc, tests:test_case(Tc), TestCases),
+    test_all_parse(TestCases, []).
 
 test_all_parse([], Failures) :-
     nl,
@@ -31,3 +25,10 @@ show_failures([Failure | Failures]) :-
     show_failures(Failures).
 
 show_failures([]) :- nl.
+
+test_case([max,revealed,to,everyone,the,amazing,fact,that,birds,fly]).
+test_case([the,dog,slept]).
+test_case([max,said,birds,fly]).
+test_case([i,walked,past,the,car]).
+test_case([i,passed,the,car]).
+test_case([max,looked,very,silly]).

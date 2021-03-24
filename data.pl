@@ -79,6 +79,8 @@ d_(the).
 d_(a).
 d_(an).
 d_(every).
+d_(all).
+d_(no).
 d_(some).
 d_(one).
 d_(two).
@@ -200,3 +202,5 @@ v_(walked).
 p_(past).
 v_(went).
 n_(store).
+v_(looked).
+adj_(silly).
