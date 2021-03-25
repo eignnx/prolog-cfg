@@ -9,7 +9,8 @@
     pn_/1,
     nm_/1,
     comp_/1,
-    v_/1
+    v_/1,
+    part_/1
 ]).
 
 unknown_word(Word) :-
@@ -24,6 +25,7 @@ unknown_word(Word) :-
     \+ nm_(Word),
     \+ comp_(Word),
     \+ v_(Word),
+    \+ part_(Word),
     !.
 
 unknown_word(X) :-
@@ -57,7 +59,8 @@ learn_unknown_words_rec([Word | Words]) :-
         pn_,
         nm_,
         comp_,
-        v_
+        v_,
+        part_
     ],
     tab(4), write('Part-of-speech tags: '), write_canonical(Pos), nl,
     tab(4), write('Enter part of speech (followed by ''.''): '),
@@ -130,6 +133,7 @@ n_(fact).
 % Prepositions
 :- dynamic p_/1.
 :- discontiguous p_/1.
+p_(P) :- part_(P). % All particles are prepositions.
 p_(into).
 p_(in).
 p_(from).
@@ -190,6 +194,12 @@ v_(slept).
 v_(said).
 v_(revealed).
 
+% Particles
+:- dynamic part_/1.
+:- discontiguous part_/1.
+part_(out). % 'He threw out the trash'
+part_(up). % 'She looked up the word'
+
 %%%%%%%%%%%%% HERE BE RANDOM LEARNED DEFINITIONS %%%%%%%%%%%%%%%%%%
 % Concern: if I ever need to update all occurrances of one
 % of these facts, its gonna be trickier to see where they
@@ -204,3 +214,8 @@ v_(went).
 n_(store).
 v_(looked).
 adj_(silly).
+nm_(john).
+n_(tower).
+nm_(joe).
+v_(threw).
+n_(trash).

@@ -56,7 +56,11 @@ vp_foll(V->vp(V, Pp, Np1, S1)) --> pp(Pp), np(Np1), s1(S1).
 vp_foll(V->vp(V, Np1, S1)) --> np(Np1), s1(S1).
 % 'Max said [that all birds fly]'
 vp_foll(V->vp(V, S1)) --> s1(S1).
-vp_foll(V->vp(V, Np1)) --> np(Np1).
+% 'Mary looked the tower up'
+vp_foll(V->vp(V, Np, Particle)) --> np(Np), part(Particle).
+% 'Mary looked up the tower'
+vp_foll(V->vp(V, Particle, Np)) --> part(Particle), np(Np).
+vp_foll(V->vp(V, Np)) --> np(Np).
 % 'I walked [past the car]'
 vp_foll(V->vp(V, Pp)) --> pp(Pp).
 % 'John [seemed very old]'
@@ -67,3 +71,5 @@ vp_foll(V->vp(V, Vp)) --> [to], vp(Vp).
 vp_foll(V->vp(V)) --> [].
 
 v(v(Verb)) --> [Verb], { data:v_(Verb) }.
+
+part(part(Particle)) --> [Particle], { data:part_(Particle) }.

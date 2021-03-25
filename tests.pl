@@ -32,3 +32,6 @@ test_case([max,said,birds,fly]).
 test_case([i,walked,past,the,car]).
 test_case([i,passed,the,car]).
 test_case([max,looked,very,silly]).
+test_case([mary,looked,up,the,tower]). % TODO: ensure this parses two ways.
+test_case([joe,threw,out,the,trash]).
+test_case([joe,threw,the,trash,out]).
