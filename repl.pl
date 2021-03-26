@@ -9,20 +9,27 @@ repl :-
     repeat,
         write('Sentence: '),
         tokenize:read_atomics(Atoms),
-        show_then_quit_or_continue(Tree, Atoms, phrase(s(Tree), Atoms)),
+        show_then_quit_or_continue(Atoms),
         Atoms == [quit],
         write('Quitting...'), nl,
     !.
 
-show_then_quit_or_continue(Tree, _Atoms, Term) :-
-    call(Term),
+show_then_quit_or_continue(Atoms) :-
+    % Important: `bagof` fails if phrase(..) fails.
+    bagof(Tree, phrase(s(Tree), Atoms), Trees),
     !,
-    write_canonical(Tree), nl,
+    show_solutions(Trees),
     fail. % Continue the repl loop.
 
-show_then_quit_or_continue(_Tree, Atoms, _Term) :-
-    ( Atoms == [quit] -> true
+show_then_quit_or_continue(Atoms) :-
+    ( Atoms == [quit] -> true % Exit the repl loop.
     ; write('Could not parse.'), nl,
       data:learn_unknown_words(Atoms),
       fail % Continue the repl loop.
     ).
+
+show_solutions([]).
+
+show_solutions([Tree | Trees]) :-
+    write_canonical(Tree), nl,
+    show_solutions(Trees).
