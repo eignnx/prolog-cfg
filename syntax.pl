@@ -1,12 +1,13 @@
 :- module(syntax, [s//1, s1//1, d//1, np//1, vp//1, pp//1]).
 :- use_module(data).
 
-np(np(Det, Noun1)) --> d(Det), n1(Noun1).
+np(np(Det, Noun1, Pp, S1)) --> d(Det), n1(Noun1), pp(Pp), s1(S1).
 np(np(Det, Noun1, Pp)) --> d(Det), n1(Noun1), pp(Pp).
 np(np(Det, Noun1, S1)) --> d(Det), n1(Noun1), s1(S1).
-np(np(Det, Noun1, Pp, S1)) --> d(Det), n1(Noun1), pp(Pp), s1(S1).
+np(np(Det, Noun1)) --> d(Det), n1(Noun1).
 np(np(Pn)) --> pn(Pn).
 np(np(Nm)) --> nm(Nm).
+np(np(both, Np1, conj(and), Np2)) --> [both], np(Np1), [and], np(Np2).
 
 d(d(X)) --> [X], { data:d_(X) }, !.
 d(d('0')) --> [], !.
@@ -18,6 +19,7 @@ n1(n1(AdjP, N1)) --> adjp(AdjP), n1(N1).
 % Adjective Phrase - like 'very big', 'surprisingly big', ...
 adjp(adjp(Degree, Adj)) --> deg(Degree), adj(Adj).
 adjp(adjp(Adj)) --> adj(Adj).
+adjp(adjp(both, Ap1, conj(and), Ap2)) --> [both], adjp(Ap1), [and], adjp(Ap2).
 
 deg(deg(Degree)) --> [Degree], { data:deg_(Degree) }.
 

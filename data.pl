@@ -10,7 +10,9 @@
     nm_/1,
     comp_/1,
     v_/1,
-    part_/1
+    part_/1,
+    adv_/1,
+    conj_/1
 ]).
 
 unknown_word(Word) :-
@@ -26,6 +28,8 @@ unknown_word(Word) :-
     \+ comp_(Word),
     \+ v_(Word),
     \+ part_(Word),
+    \+ adv_(Word),
+    \+ conj_(Word),
     !.
 
 unknown_word(X) :-
@@ -60,7 +64,9 @@ learn_unknown_words_rec([Word | Words]) :-
         nm_,
         comp_,
         v_,
-        part_
+        part_,
+        adv_,
+        conj_
     ],
     tab(4), write('Part-of-speech tags: '), write_canonical(Pos), nl,
     tab(4), write('Enter part of speech (followed by ''.''): '),
@@ -78,6 +84,12 @@ learn_fact(Fact) :-
 % Determiners
 :- dynamic d_/1.
 :- discontiguous d_/1.
+d_(my).
+d_(your).
+d_(his).
+d_(her).
+d_(their).
+d_(our).
 d_(the).
 d_(a).
 d_(an).
@@ -200,6 +212,21 @@ v_(revealed).
 part_(out). % 'He threw out the trash'
 part_(up). % 'She looked up the word'
 
+
+% Adverbs
+:- dynamic adv_/1.
+:- discontiguous adv_/1.
+adv_(both).
+adv_(either).
+adv_(neither).
+
+% Conjunctions
+:- dynamic conj_/1.
+:- discontiguous conj_/1.
+conj_(and).
+conj_(or).
+conj_(nor).
+
 %%%%%%%%%%%%% HERE BE RANDOM LEARNED DEFINITIONS %%%%%%%%%%%%%%%%%%
 % Concern: if I ever need to update all occurrances of one
 % of these facts, its gonna be trickier to see where they
@@ -219,3 +246,10 @@ n_(tower).
 nm_(joe).
 v_(threw).
 n_(trash).
+nm_(dante).
+pn_(my).
+adj_(favorite).
+n_(pet).
+adj_(warm).
+adj_(fuzzy).
+adj_(dry).

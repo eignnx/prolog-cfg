@@ -35,3 +35,5 @@ test_case([max,looked,very,silly]).
 test_case([mary,looked,up,the,tower]). % TODO: ensure this parses two ways.
 test_case([joe,threw,out,the,trash]).
 test_case([joe,threw,the,trash,out]).
+test_case([it,is,both,very,warm,and,quite,dry]).
+test_case([john,drank,both,coffee,and,tea]).
