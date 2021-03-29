@@ -45,6 +45,7 @@ comp(comp('0')) --> [], !.
 s(s(Np, Vp)) --> np(Np), vp(Vp).
 
 vp(VpTree) --> v(V), vp_foll(V->VpTree).
+vp(vp(both, Vp1, conj(and), Vp2)) --> [both], vp(Vp1), [and], vp(Vp2).
 
 % vp --> v, (np), (pp), (np), (pp), (s1).
 % TODO: THIS IS NOT GOOD ENOUGH, AND IT'S NOT EVEN COVERED COMPLETELY.

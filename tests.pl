@@ -37,3 +37,4 @@ test_case([joe,threw,out,the,trash]).
 test_case([joe,threw,the,trash,out]).
 test_case([it,is,both,very,warm,and,quite,dry]).
 test_case([john,drank,both,coffee,and,tea]).
+test_case([i,both,ate,and,slept,in,the,tower]).

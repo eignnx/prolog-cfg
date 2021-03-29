@@ -253,3 +253,4 @@ n_(pet).
 adj_(warm).
 adj_(fuzzy).
 adj_(dry).
+v_(ate).
