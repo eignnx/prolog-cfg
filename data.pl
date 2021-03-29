@@ -254,3 +254,14 @@ adj_(warm).
 adj_(fuzzy).
 adj_(dry).
 v_(ate).
+n_(discussion).
+p_(after).
+v_(left).
+adj_(surprising).
+v_(saw).
+v_(drank).
+n_(coffee).
+n_(tea).
+v_(heard).
+p_(about).
+n_(meeting).

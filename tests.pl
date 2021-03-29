@@ -38,3 +38,7 @@ test_case([joe,threw,the,trash,out]).
 test_case([it,is,both,very,warm,and,quite,dry]).
 test_case([john,drank,both,coffee,and,tea]).
 test_case([i,both,ate,and,slept,in,the,tower]).
+test_case([i,saw,him,after,he,left]).
+test_case([the,discussion,was,surprising,after,he,left]).
+test_case([the,discussion,after,he,left,was,surprising]).
+test_case([after,he,left,the,discussion,was,surprising]).

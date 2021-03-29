@@ -27,7 +27,10 @@ adj(adj(X)) --> [X], { data:adj_(X) }.
 
 n(n(X)) --> [X], { data:n_(X) }.
 
-pp(pp(p(P), Np)) --> { data:p_(P) }, [P], np(Np).
+% '[in] [the garden]'
+pp(pp(p(P), Np)) --> [P], { data:p_(P) }, np(Np).
+% '[after] [he left the conference]'
+pp(pp(p(P), S)) --> [P], { data:p_(P) }, s(S).
 
 pn(pn(Pn)) --> [Pn], { data:pn_(Pn) }.
 
@@ -42,6 +45,9 @@ comp(comp(C)) --> [C], { data:comp_(C) }, !.
 % 'She said [[] he slept]'
 comp(comp('0')) --> [], !.
 
+% '[After he left] [the discussion] [continued]'
+s(s(PP, Np, Vp)) --> pp(PP), np(Np), vp(Vp).
+% '[the dog] [slept]'
 s(s(Np, Vp)) --> np(Np), vp(Vp).
 
 vp(VpTree) --> v(V), vp_foll(V->VpTree).
@@ -67,6 +73,7 @@ vp_foll(V->vp(V, Np)) --> np(Np).
 % 'I walked [past the car]'
 vp_foll(V->vp(V, Pp)) --> pp(Pp).
 % 'John [seemed very old]'
+vp_foll(V->vp(V, Adjp, Pp)) --> adjp(Adjp), pp(Pp).
 vp_foll(V->vp(V, Adjp)) --> adjp(Adjp).
 % 'John [wanted to leave]'
 vp_foll(V->vp(V, Vp)) --> [to], vp(Vp).
