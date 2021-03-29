@@ -42,3 +42,7 @@ test_case([i,saw,him,after,he,left]).
 test_case([the,discussion,was,surprising,after,he,left]).
 test_case([the,discussion,after,he,left,was,surprising]).
 test_case([after,he,left,the,discussion,was,surprising]).
+test_case([quickly,he,chased,it,into,the,garden]).
+test_case([he,quickly,chased,it,into,the,garden]).
+test_case([he,chased,it,quickly,into,the,garden]).
+test_case([he,chased,it,into,the,garden,quickly]).

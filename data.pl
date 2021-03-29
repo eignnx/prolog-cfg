@@ -265,3 +265,4 @@ n_(tea).
 v_(heard).
 p_(about).
 n_(meeting).
+adv_(quickly).

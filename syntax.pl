@@ -45,9 +45,22 @@ comp(comp(C)) --> [C], { data:comp_(C) }, !.
 % 'She said [[] he slept]'
 comp(comp('0')) --> [], !.
 
+% '[very] [quickly]'
+advp(advp(Deg, Adv)) --> deg(Deg), adv(Adv).
+advp(advp(Adv)) --> adv(Adv).
+
+adv(adv(A)) --> [A], { data:adv_(A) }.
+
+% s --> (advp), (pp), np, (advp), vp
+% 'quickly he ate'
+s(s(Advp, Np, Vp)) --> advp(Advp), np(Np), vp(Vp).
+% 'quickly into the forest she ran'
+s(s(Advp, PP, Np, Vp)) --> advp(Advp), pp(PP), np(Np), vp(Vp).
 % '[After he left] [the discussion] [continued]'
 s(s(PP, Np, Vp)) --> pp(PP), np(Np), vp(Vp).
-% '[the dog] [slept]'
+% '[the dog] [quickly] [ran]'
+s(s(Np, Advp, Vp)) --> np(Np), advp(Advp), vp(Vp).
+% '[the dog] [ran]'
 s(s(Np, Vp)) --> np(Np), vp(Vp).
 
 vp(VpTree) --> v(V), vp_foll(V->VpTree).
@@ -60,6 +73,8 @@ vp_foll(V->vp(V, Np1, Pp1, Np2, Pp2)) --> np(Np1), pp(Pp1), np(Np2), pp(Pp2).
 vp_foll(V->vp(V, Np1, Pp1, Np2, S1)) --> np(Np1), pp(Pp1), np(Np2), s1(S1).
 vp_foll(V->vp(V, Np1, Pp1, Np2)) --> np(Np1), pp(Pp1), np(Np2).
 vp_foll(V->vp(V, Np1, Pp1, S1)) --> np(Np1), pp(Pp1), s1(S1).
+vp_foll(V->vp(V, Np1, Pp1, Advp)) --> np(Np1), pp(Pp1), advp(Advp).
+vp_foll(V->vp(V, Np1, Advp, Pp1)) --> np(Np1), advp(Advp), pp(Pp1).
 vp_foll(V->vp(V, Np1, Pp1)) --> np(Np1), pp(Pp1).
 vp_foll(V->vp(V, Pp, Np1, S1)) --> pp(Pp), np(Np1), s1(S1).
 vp_foll(V->vp(V, Np1, S1)) --> np(Np1), s1(S1).
