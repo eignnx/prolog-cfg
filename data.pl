@@ -44,9 +44,10 @@ unknown_word(X) :-
 
 learn_unknown_words(Words) :-
     include(unknown_word, Words, UnknownWords),
-    write('These words are unknown: '),
-    write_canonical(UnknownWords), nl,
-    learn_unknown_words_rec(UnknownWords).
+    dif(UnknownWords, []) ->
+        write('These words are unknown: '), write_canonical(UnknownWords), nl,
+        learn_unknown_words_rec(UnknownWords)
+    ; true.
 
 learn_unknown_words([]).
 
@@ -266,3 +267,22 @@ v_(heard).
 p_(about).
 n_(meeting).
 adv_(quickly).
+nm_(gideon).
+pn_(this).
+adj_(fun).
+nm_(jake).
+nm_(levi).
+nm_(chloe).
+nm_(diane).
+nm_(kirsten).
+adj_(quick).
+adj_(brown).
+n_(fox).
+v_(jumps).
+p_(over).
+adj_(lazy).
+v_(climbed).
+n_(cake).
+n_(pie).
+nm_(casey).
+nm_(jason).

@@ -1,3 +1,4 @@
+:- module(repl, [repl/0]).
 :- use_module(library(apply), [include/3]).
 :- use_module(tokenize).
 :- use_module(data).
@@ -6,27 +7,24 @@
 
 % The main loop.
 repl :-
-    repeat,
-        write('Sentence: '),
-        tokenize:read_atomics(Atoms),
-        show_then_quit_or_continue(Atoms),
-        Atoms == [quit],
-        write('Quitting...'), nl,
-    !.
+    write('Sentence: '),
+    tokenize:read_atomics(Atoms),
+    process_input(Atoms).
 
-show_then_quit_or_continue(Atoms) :-
-    % Important: `bagof` fails if phrase(..) fails.
-    bagof(Tree, phrase(s(Tree), Atoms), Trees),
+process_input([quit]) :-
     !,
-    show_solutions(Trees),
-    fail. % Continue the repl loop.
+    writeln('Quitting...'),
+    fail.
 
-show_then_quit_or_continue(Atoms) :-
-    ( Atoms == [quit] -> true % Exit the repl loop.
-    ; write('Could not parse.'), nl,
-      data:learn_unknown_words(Atoms),
-      fail % Continue the repl loop.
-    ).
+process_input(Atoms) :-
+    % If there are any unknown words, learn them first.
+    data:learn_unknown_words(Atoms),
+    % Important: `bagof` fails if phrase(..) fails.
+    (  bagof(Tree, phrase(s(Tree), Atoms), Trees)
+    -> show_solutions(Trees)
+    ;  writeln('Could not parse'), write_canonical(Atoms)
+    ),
+    repl.
 
 show_solutions([]).
 
