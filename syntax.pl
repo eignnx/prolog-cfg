@@ -9,7 +9,7 @@ np(np(Pn)) --> pn(Pn).
 np(np(Nm)) --> nm(Nm).
 np(np(both, Np1, conj(and), Np2)) --> [both], np(Np1), [and], np(Np2).
 
-d(d(X)) --> [X], { data:d_(X) }, !.
+d(d(X)) --> [X], { data:word_type(X, determiner) }, !.
 d(d('0')) --> [], !.
 
 % Multiple adjective-phrases followed by a noun.
@@ -21,27 +21,27 @@ adjp(adjp(Degree, Adj)) --> deg(Degree), adj(Adj).
 adjp(adjp(Adj)) --> adj(Adj).
 adjp(adjp(both, Ap1, conj(and), Ap2)) --> [both], adjp(Ap1), [and], adjp(Ap2).
 
-deg(deg(Degree)) --> [Degree], { data:deg_(Degree) }.
+deg(deg(Degree)) --> [Degree], { data:word_type(Degree, degree) }.
 
-adj(adj(X)) --> [X], { data:adj_(X) }.
+adj(adj(X)) --> [X], { data:word_type(X, adjective) }.
 
-n(n(X)) --> [X], { data:n_(X) }.
+n(n(X)) --> [X], { data:word_type(X, noun) }.
 
 % '[in] [the garden]'
-pp(pp(p(P), Np)) --> [P], { data:p_(P) }, np(Np).
+pp(pp(p(P), Np)) --> [P], { data:word_type(P, preposition) }, np(Np).
 % '[after] [he left the conference]'
-pp(pp(p(P), S)) --> [P], { data:p_(P) }, s(S).
+pp(pp(p(P), S)) --> [P], { data:word_type(P, preposition) }, s(S).
 
-pn(pn(Pn)) --> [Pn], { data:pn_(Pn) }.
+pn(pn(Pn)) --> [Pn], { data:word_type(Pn, pronoun) }.
 
-nm(nm(Nm)) --> [Nm], { data:nm_(Nm) }.
+nm(nm(Nm)) --> [Nm], { data:word_type(Nm, name) }.
 
 % These are for sentences embedded in noun phrases.
 % Example - 'the fact [that he slept]'
 s1(s1(C, Sentence)) --> comp(C), s(Sentence).
 
 % Complementizer - 'the fact [[that] he slept]'
-comp(comp(C)) --> [C], { data:comp_(C) }, !.
+comp(comp(C)) --> [C], { data:word_type(C, complementizer) }, !.
 % 'She said [[] he slept]'
 comp(comp('0')) --> [], !.
 
@@ -49,7 +49,7 @@ comp(comp('0')) --> [], !.
 advp(advp(Deg, Adv)) --> deg(Deg), adv(Adv).
 advp(advp(Adv)) --> adv(Adv).
 
-adv(adv(A)) --> [A], { data:adv_(A) }.
+adv(adv(A)) --> [A], { data:word_type(A, adverb) }.
 
 % s --> (advp), (pp), np, (advp), vp
 % 'quickly he ate'
@@ -87,6 +87,8 @@ vp_foll(V->vp(V, Particle, Np)) --> part(Particle), np(Np).
 vp_foll(V->vp(V, Np)) --> np(Np).
 % 'I walked [past the car]'
 vp_foll(V->vp(V, Pp)) --> pp(Pp).
+% 'I [woke [up]]'
+vp_foll(V->vp(V, Particle)) --> part(Particle).
 % 'John [seemed very old]'
 vp_foll(V->vp(V, Adjp, Pp)) --> adjp(Adjp), pp(Pp).
 vp_foll(V->vp(V, Adjp)) --> adjp(Adjp).
@@ -95,6 +97,6 @@ vp_foll(V->vp(V, Vp)) --> [to], vp(Vp).
 % 'Jesus wept []'
 vp_foll(V->vp(V)) --> [].
 
-v(v(Verb)) --> [Verb], { data:v_(Verb) }.
+v(v(Verb)) --> [Verb], { data:word_type(Verb, verb) }.
 
-part(part(Particle)) --> [Particle], { data:part_(Particle) }.
+part(part(Particle)) --> [Particle], { data:word_type(Particle, particle) }.

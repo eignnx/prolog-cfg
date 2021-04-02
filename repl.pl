@@ -7,6 +7,13 @@
 
 % The main loop.
 repl :-
+    setup_call_cleanup(
+        data:init_db,
+        loop,
+        data:close_db
+    ).
+
+loop :-
     write('Sentence: '),
     tokenize:read_atomics(Atoms),
     process_input(Atoms).
@@ -19,12 +26,12 @@ process_input([quit]) :-
 process_input(Atoms) :-
     % If there are any unknown words, learn them first.
     data:learn_unknown_words(Atoms),
-    % Important: `bagof` fails if phrase(..) fails.
-    (  bagof(Tree, phrase(s(Tree), Atoms), Trees)
+    % Important: `setof` fails if phrase(..) fails.
+    (  setof(Tree, phrase(s(Tree), Atoms), Trees)
     -> show_solutions(Trees)
-    ;  writeln('Could not parse'), write_canonical(Atoms)
+    ;  writeln('Could not parse')
     ),
-    repl.
+    loop.
 
 show_solutions([]).
 
