@@ -152,3 +152,5 @@ assert(data_word_type(nor,conjunction)).
 assert(data_word_type(fan,noun)).
 assert(data_word_type(dark,adjective)).
 assert(data_word_type(woke,verb)).
+assert(data_word_type(street,noun)).
+assert(data_word_type(dogs,noun)).
