@@ -27,9 +27,9 @@ user:term_expansion((Head0 ++> Body0), (Head --> Body)) :-
     maplist(plus_plus_arrow_expansion, ExpandedRules, TranslatedRules),
 
     % Now join all these rules into one rule that shares a syntax tree variable.
-    join_into_branching_syntax_rule((Head0 --> TranslatedRules), (Head --> Body)).
+    join_into_branching_syntax_rule(Head0, TranslatedRules, (Head --> Body)).
 
-join_into_branching_syntax_rule((Head0 --> TranslatedRules), (Head --> Body)) :-
+join_into_branching_syntax_rule(Head0, TranslatedRules, (Head --> Body)) :-
     maplist(body_to_final_assignment_form(SyntaxVar), TranslatedRules, FinalBodies),
     Head0 =.. [Functor|Args],
     Head =.. [Functor, SyntaxVar|Args],
