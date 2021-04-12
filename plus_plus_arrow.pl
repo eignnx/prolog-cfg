@@ -20,29 +20,27 @@ n(n([N])) --> [N], { noun(N) }.
 */
 
 user:term_expansion((Head0 ++> Body0), (Head --> Body)) :-
-    expand_optionals(Body0, BodiesSemi),
-    semicolon_list(BodiesSemi, Bodies),
-    Mapper = {Head0}/[In,Out]>>(
-        plus_plus_arrow_expansion((Head0 ++> In), Out)
-    ),
-    maplist(Mapper, Bodies, TranslatedRules),
+    % First expand the rule so that no more optionality syntax (`?blah`) exists.
+    optional_expansions((Head0 ++> Body0), ExpandedRules),
 
-    % Now just reassemble all these rules into one rule.
-    join_rules(TranslatedRules, SyntaxVar, FinalBodies),
+    % Then translate `++>` rules to dcg `-->` rules.
+    maplist(plus_plus_arrow_expansion, ExpandedRules, TranslatedRules),
+
+    % Now join all these rules into one rule that shares a syntax tree variable.
+    join_into_branching_syntax_rule((Head0 --> TranslatedRules), (Head --> Body)).
+
+join_into_branching_syntax_rule((Head0 --> TranslatedRules), (Head --> Body)) :-
+    maplist(body_to_final_assignment_form(SyntaxVar), TranslatedRules, FinalBodies),
     Head0 =.. [Functor|Args],
     Head =.. [Functor, SyntaxVar|Args],
     semicolon_list(Body, FinalBodies).
 
-join_rules([(Head0 --> Body0)|Rest0], SyntaxVar, [Body|Rest]) :-
+body_to_final_assignment_form(SyntaxVar, (Head0 --> Body0), Body) :-
     Head0 =.. [_Functor, SyntaxTree|_RemainingArgs],
     Body = (
         Body0,
         { SyntaxVar = SyntaxTree }
-    ),
-    join_rules(Rest0, SyntaxVar, Rest).
-
-join_rules([], _, []).
-
+    ).
 
 plus_plus_arrow_expansion((Head0 ++> Body0), (Head --> Body)) :-
     comma_list(Body0, BodyList0),
@@ -177,24 +175,15 @@ is_list([_|Xs]) :- is_list(Xs).
 list([]) --> [].
 list([X|Xs]) --> [X], list(Xs).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Accepts a rule with optionality syntax in its body and expands it into a list
+% of rules, each with the same head, but with expanded bodies where an 'expanded'
+% body E is one that is an 'optional subset' of the original body.
 
-/*
-s --> ?advp, ?pp, np, ?advp, vp.
-
-head --> a(X), ?b(X, Y), c(Y).
-==>
-head -->
-    ( (a(X), b(X, Y), c(Y))
-    ; (a(X), c(Y))
-    ).
-*/
-
-expand_optionals(Body0, Body) :-
-    comma_list(Body0, BodyList0),
-    optional_powerset(BodyList0, BodyLists),
+optional_expansions((Head ++> Body), Rules) :-
+    comma_list(Body, BodyList),
+    optional_powerset(BodyList, BodyLists),
     maplist(comma_list, Bodies, BodyLists),
-    semicolon_list(Body, Bodies).
+    maplist({Head}/[B,R]>>((Head ++> B) = R), Bodies, Rules).
 
 % [a, ?b, c] ~~> [[a, b, c], [a, c]]
 % [?a, ?b] ~~> [[a, b], [a], [b], []]

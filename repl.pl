@@ -1,4 +1,4 @@
-:- module(repl, [repl/0]).
+:- module(repl, [repl/0, test_all/0]).
 :- use_module(library(apply), [include/3]).
 :- use_module(tokenize).
 :- use_module(data).

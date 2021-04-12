@@ -2,6 +2,9 @@
 :- use_module(data).
 :- use_module(plus_plus_arrow).
 
+% Sentence
+s ++> ?advp, ?pp, np, ?advp, vp.
+
 np ++> d, n1, pp, s1.
 np ++> d, n1, pp.
 np ++> d, n1, s1.
@@ -53,9 +56,6 @@ advp ++> deg, adv. % TODO: replace this `adv` with `advp`?
 advp ++> adv.
 
 adv ++> [A], { data:word_type(A, adverb) }.
-
-% s --> (advp), (pp), np, (advp), vp
-s ++> ?advp, ?pp, np, ?advp, vp.
 
 vp ++> [both], vp, [and], vp.
 vp ++> v, ?np, ?advp, ?pp, ?np, ?pp, ?advp, ?s1.
