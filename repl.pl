@@ -33,8 +33,13 @@ process_input(Atoms) :-
     ),
     loop.
 
-show_solutions([]).
 
-show_solutions([Tree | Trees]) :-
-    write_canonical(Tree), nl,
-    show_solutions(Trees).
+show_solutions(Trees) :-
+    show_solutions(1, Trees).
+
+show_solutions(_, []) :- nl.
+
+show_solutions(N, [Tree | Trees]) :-
+    format('~d. ~k~n', [N, Tree]),
+    N1 is N + 1,
+    show_solutions(N1, Trees).
