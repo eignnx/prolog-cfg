@@ -1,12 +1,16 @@
 :- module(tests, [test_all/0]).
 :- use_module(syntax, [s//1]).
-:- use_module(data, [init_db/0, close_db/0]).
+:- use_module(data).
 
 test_all :-
-    init_db,
-    findall(Tc, tests:test_case(Tc), TestCases),
-    test_all_parse(TestCases, []),
-    close_db.
+    setup_call_cleanup(
+        data:init_db,
+        (
+            findall(Tc, tests:test_case(Tc), TestCases),
+            test_all_parse(TestCases, [])
+        ),
+        data:close_db
+    ).
 
 test_all_parse([], Failures) :-
     nl,
