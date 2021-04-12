@@ -1,9 +1,12 @@
 :- module(tests, [test_all/0]).
 :- use_module(syntax, [s//1]).
+:- use_module(data, [init_db/0, close_db/0]).
 
 test_all :-
+    init_db,
     findall(Tc, tests:test_case(Tc), TestCases),
-    test_all_parse(TestCases, []).
+    test_all_parse(TestCases, []),
+    close_db.
 
 test_all_parse([], Failures) :-
     nl,
@@ -46,3 +49,10 @@ test_case([quickly,he,chased,it,into,the,garden]).
 test_case([he,quickly,chased,it,into,the,garden]).
 test_case([he,chased,it,quickly,into,the,garden]).
 test_case([he,chased,it,into,the,garden,quickly]).
+test_case([jesus,wept]).
+test_case([john,wanted,to,leave]).
+test_case([john,seemed,very,old]).
+test_case([john,seemed,very,old,in,his,own,way]).
+test_case([i,woke,up]).
+test_case([i,walked,past,the,car]).
+test_case([quickly,he,ate]).

@@ -1,7 +1,11 @@
 :- module(plus_plus_arrow, [
-    op(1200, xfx, ++>)
+    op(1200, xfx, ++>),
+    op(1, fx, ?)
 ]).
 
+:- use_module(library(clpfd)).
+
+:- op(1, fx, ?).
 :- op(1200, xfx, ++>).
 
 /*
@@ -15,8 +19,30 @@ expands to:
 n(n([N])) --> [N], { noun(N) }.
 */
 
-user:term_expansion((Head ++> Body), Expansion) :-
-    plus_plus_arrow_expansion((Head ++> Body), Expansion).
+user:term_expansion((Head0 ++> Body0), (Head --> Body)) :-
+    expand_optionals(Body0, BodiesSemi),
+    semicolon_list(BodiesSemi, Bodies),
+    Mapper = {Head0}/[In,Out]>>(
+        plus_plus_arrow_expansion((Head0 ++> In), Out)
+    ),
+    maplist(Mapper, Bodies, TranslatedRules),
+
+    % Now just reassemble all these rules into one rule.
+    join_rules(TranslatedRules, SyntaxVar, FinalBodies),
+    Head0 =.. [Functor|Args],
+    Head =.. [Functor, SyntaxVar|Args],
+    semicolon_list(Body, FinalBodies).
+
+join_rules([(Head0 --> Body0)|Rest0], SyntaxVar, [Body|Rest]) :-
+    Head0 =.. [_Functor, SyntaxTree|_RemainingArgs],
+    Body = (
+        Body0,
+        { SyntaxVar = SyntaxTree }
+    ),
+    join_rules(Rest0, SyntaxVar, Rest).
+
+join_rules([], _, []).
+
 
 plus_plus_arrow_expansion((Head0 ++> Body0), (Head --> Body)) :-
     comma_list(Body0, BodyList0),
@@ -43,23 +69,55 @@ forbidden_functor('|').
 ignorable_functor({}).
 ignorable_functor(!).
 
+penetrable_functor(?).
+
 tag_terminal_symbol(X, [X]).
 
-nonterminal_body_expansion([Term|Rest0], [Term|Rest]) -->
+
+% notion_expansion(+OldNotion, -TranslatedNotion)//.
+%
+% A `notion` is either a terminal or a nonterminal. It's just element that could
+% appear on the right-hand side of a rule. A notion could also be a
+% curly-brace-enclosed term.
+
+notion_expansion(Notion, Notion) -->
+    % If the head of the notion is an ignorable functor, pass it along
+    % unchanged.
     {
-        % If the head of the term is an ignorable functor,
-        % pass it along unchanged.
-        Term =.. [Head|_],
+        Notion =.. [Head|_],
         ignorable_functor(Head),
         !
-    },
-    nonterminal_body_expansion(Rest0, Rest).
+    }.
 
-nonterminal_body_expansion([Term|_], _) -->
+notion_expansion(Notion0, Notion) -->
+    % If the head of the term is a penetrable functor, translate its innards,
+    % then wrap it back up in the penetrable functor.
     {
-        % If the head of the term is a forbidden functor,
-        % throw an error, and halt translation.
-        Term =.. [Head|_],
+        Notion0 =.. [Head|Args],
+        penetrable_functor(Head),
+        !,
+        [Inner] = Args % Ensure it only has one argument.
+    },
+    notion_expansion(Inner, ExpandedInner),
+    {
+        Notion =.. [Head, ExpandedInner] % Wrap it back up in the functor.
+    }.
+
+notion_expansion(Notion, Notion) -->
+    % If the notion is a list of terminal symbols, expand them out into the list
+    % of tracked values. We include the tokens in the syntax tree alongside
+    % subtrees from nonterminals for readability's sake.
+    {
+        is_list(Notion),
+        !
+    },
+    list([Notion]).
+
+notion_expansion(Notion, _) -->
+    % If the head of the term is a forbidden functor,
+    % throw an error, and halt translation.
+    {
+        Notion =.. [Head|_],
         forbidden_functor(Head),
         !,
         format(atom(Msg), 'Functor head `~a` is not allowed in the body of a `++>` rule!', [Head]),
@@ -67,28 +125,25 @@ nonterminal_body_expansion([Term|_], _) -->
         fail
     }.
 
-nonterminal_body_expansion([Term|Rest0], [Term|Rest]) -->
+notion_expansion(Notion0, Notion) -->
+    % In all other cases, it must be a functor. Add a variable to the list of
+    % arguments, then track the notion.
     {
-        is_list(Term),
-        !
+        Notion0 =.. [Functor|SuppliedArgs],
+        Notion =.. [Functor, SyntaxVar|SuppliedArgs]
     },
-    list([Term]), % Include the tokens in the syntax tree alongside subtrees from nonterminals.
-    nonterminal_body_expansion(Rest0, Rest).
+    [SyntaxVar].
 
-nonterminal_body_expansion([Nt0|Rest0], [Nt|Rest]) -->
-    {
-        Nt0 =.. [Functor|SuppliedArgs],
-        Nt =.. [Functor, Var|SuppliedArgs]
-    },
-    [Var],
+nonterminal_body_expansion([Notion0|Rest0], [Notion|Rest]) -->
+    notion_expansion(Notion0, Notion),
     nonterminal_body_expansion(Rest0, Rest).
 
 nonterminal_body_expansion([], []) --> [].
 
 %! terminal_body_expansion(Body0, Body)
-%!
-%! Expands `a ++> [x].` to `a(a([x])) --> [x].`
-%! Expands `a ++> [].` to `a(a([])) --> [].`
+%
+% Expands `a ++> [x].` to `a(a([x])) --> [x].`
+% Expands `a ++> [].` to `a(a([])) --> [].`
 
 terminal_body_expansion([L|Rest0], [L|Rest]) -->
     { is_list(L) },
@@ -121,3 +176,65 @@ is_list([_|Xs]) :- is_list(Xs).
 
 list([]) --> [].
 list([X|Xs]) --> [X], list(Xs).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/*
+s --> ?advp, ?pp, np, ?advp, vp.
+
+head --> a(X), ?b(X, Y), c(Y).
+==>
+head -->
+    ( (a(X), b(X, Y), c(Y))
+    ; (a(X), c(Y))
+    ).
+*/
+
+expand_optionals(Body0, Body) :-
+    comma_list(Body0, BodyList0),
+    fix_body(BodyList0, BodyLists),
+    maplist(comma_list, Bodies, BodyLists),
+    semicolon_list(Body, Bodies).
+
+
+% superset([_|Xs0], Xs) :-
+%     superset(Xs0, Xs).
+% superset([X|Xs0], [X|Xs]) :-
+%     superset(Xs0, Xs).
+% superset([], []).
+
+% powerset([a,b], [[a, b], [a], [b], []]).
+% powerset(Superset, Powerset) :-
+%     bagof(Subset, superset(Superset, Subset), Powerset).
+
+superset_with_holes([Idx-_|Xs0], [Idx-'$hole'|Xs]) :-
+    superset_with_holes(Xs0, Xs).
+superset_with_holes([X|Xs0], [X|Xs]) :-
+    superset_with_holes(Xs0, Xs).
+superset_with_holes([], []).
+
+indexed(L0, L) :-
+    indexed(0, L0, L).
+
+indexed(N, [X|L0], [N-X|L]) :-
+    !,
+    N1 #= N + 1,
+    indexed(N1, L0, L).
+indexed(_, [], []).
+    
+/*
+[a, ?b, c] ~~> [[a, b, c], [a, c]]
+[?a, ?b] ~~> [[a, b], [a], [b], []]
+*/
+fix_body(Body0, Bodies) :-
+    indexed(Body0, IdxBody0),
+    convlist([In, Out]>>(In = Idx - ?Value, Out = Idx-Value), IdxBody0, Optionals),
+    convlist([In, Out]>>(In = Idx-Value, Value \= ?_, Out = Idx-Value), IdxBody0, Mandatories),
+    bagof(S, superset_with_holes(Optionals, S), HoleySubsets),
+    maplist({Mandatories}/[In,Out]>>reassemble(Mandatories, In, Out), HoleySubsets, HoleyBodies),
+    maplist(exclude(=('$hole')), HoleyBodies, Bodies).
+
+reassemble(Mandatories, Optionals, Reassembled) :-
+    append(Mandatories, Optionals, Contents),
+    same_length(Contents, Reassembled),
+    maplist({Reassembled}/[Idx-Value]>>(nth0(Idx, Reassembled, Value)), Contents).

@@ -55,49 +55,25 @@ advp ++> adv.
 adv ++> [A], { data:word_type(A, adverb) }.
 
 % s --> (advp), (pp), np, (advp), vp
-% 'quickly he ate'
-s ++> advp, np, vp.
-% 'quickly into the forest she ran'
-s ++> advp, pp, np, vp.
-% '[After he left] [the discussion] [continued]'
-s ++> pp, np, vp.
-% '[the dog] [quickly] [ran]'
-s ++> np, advp, vp.
-% '[the dog] [ran]'
-s ++> np, vp.
+s ++> ?advp, ?pp, np, ?advp, vp.
 
 vp ++> [both], vp, [and], vp.
-
-% vp --> v, (np), (pp), (np), (pp), (s1).
-% TODO: THIS IS NOT GOOD ENOUGH, AND IT'S NOT EVEN COVERED COMPLETELY.
-vp ++> v, np, pp, np, pp, s1.
-vp ++> v, np, pp, np, pp.
-vp ++> v, np, pp, np, s1.
-vp ++> v, np, pp, np.
-vp ++> v, np, pp, s1.
-vp ++> v, np, pp, advp.
-vp ++> v, np, advp, pp.
-vp ++> v, np, pp.
-vp ++> v, pp, np, s1.
-vp ++> v, np, s1.
-% 'Max [said that all birds fly]'
-vp ++> v, s1.
+vp ++> v, ?np, ?advp, ?pp, ?np, ?pp, ?advp, ?s1.
 % 'Mary [looked the tower up]'
 vp ++> v, np, part.
 % 'Mary [looked up the tower]'
 vp ++> v, part, np.
-vp ++> v, np.
+% vp ++> v, np.
 % 'I [walked past the car]'
-vp ++> v, pp.
+% vp ++> v, pp.
 % 'I [woke up]'
 vp ++> v, part.
-% 'John [seemed very old]'
+% 'John [seemed very old in his own way]'
 vp ++> v, adjp, pp.
+% 'John [seemed very old]'
 vp ++> v, adjp.
 % 'John [wanted to leave]'
 vp ++> v, [to], vp.
-% 'Jesus [wept]'
-vp ++> v.
 
 v ++> [Verb], { data:word_type(Verb, verb) }.
 

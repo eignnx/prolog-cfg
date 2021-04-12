@@ -154,3 +154,9 @@ assert(data_word_type(dark,adjective)).
 assert(data_word_type(woke,verb)).
 assert(data_word_type(street,noun)).
 assert(data_word_type(dogs,noun)).
+assert(data_word_type(old,adjective)).
+assert(data_word_type(own,adjective)).
+assert(data_word_type(way,noun)).
+assert(data_word_type(wanted,verb)).
+assert(data_word_type(jesus,name)).
+assert(data_word_type(wept,verb)).
