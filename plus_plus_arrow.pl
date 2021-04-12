@@ -44,13 +44,6 @@ body_to_final_assignment_form(SyntaxVar, (Head0 --> Body0), Body) :-
 
 plus_plus_arrow_expansion((Head0 ++> Body0), (Head --> Body)) :-
     comma_list(Body0, BodyList0),
-    phrase(terminal_body_expansion(BodyList0, BodyList), Terminals),
-    !,
-    comma_list(Body, BodyList),
-    head_payload_expansion(Head0, [Terminals], Head).
-    
-plus_plus_arrow_expansion((Head0 ++> Body0), (Head --> Body)) :-
-    comma_list(Body0, BodyList0),
     phrase(nonterminal_body_expansion(BodyList0, BodyList), Vars),
     !,
     comma_list(Body, BodyList),
@@ -109,7 +102,7 @@ notion_expansion(Notion, Notion) -->
         is_list(Notion),
         !
     },
-    list([Notion]).
+    list(Notion).
 
 notion_expansion(Notion, _) -->
     % If the head of the term is a forbidden functor,
@@ -137,37 +130,6 @@ nonterminal_body_expansion([Notion0|Rest0], [Notion|Rest]) -->
     nonterminal_body_expansion(Rest0, Rest).
 
 nonterminal_body_expansion([], []) --> [].
-
-%! terminal_body_expansion(Body0, Body)
-%
-% Expands `a ++> [x].` to `a(a([x])) --> [x].`
-% Expands `a ++> [].` to `a(a([])) --> [].`
-
-terminal_body_expansion([L|Rest0], [L|Rest]) -->
-    { is_list(L) },
-    !,
-    list(L), % We found the terminal symbol.
-    terminal_body_expansion(Rest0, Rest).
-
-terminal_body_expansion([Term|Rest0], [Term|Rest]) -->
-    {
-        Term =.. [Head|_],
-        ignorable_functor(Head), % Pass it along unchanged.
-        !
-    },
-    terminal_body_expansion(Rest0, Rest).
-
-terminal_body_expansion([Term|_], _) -->
-    {
-        Term =.. [Head|_],
-        forbidden_functor(Head),
-        !,
-        format(atom(Msg), 'Functor head `~a` is not allowed in the body of a `++>` rule!', [Head]),
-        throw(error(plus_plus_arrow_expansion(Msg))),
-        fail
-    }.
-
-terminal_body_expansion([], []) --> [].
 
 is_list([]).
 is_list([_|Xs]) :- is_list(Xs).
