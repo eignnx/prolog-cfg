@@ -6,6 +6,9 @@ If it doesn't know a word, it will ask you to supply the word's part of speech.
 It then learns the word so that next time you run the parser, it remembers what
 it learned.
 
+## References
+This grammar was based heavily on the one developed by Michael A. Covington in [Natural Language Processing for Prolog Programmers](http://www.covingtoninnovations.com/books/NLPPP.pdf).
+
 ## Examples
 
 ```prolog
