@@ -192,49 +192,21 @@ head -->
 
 expand_optionals(Body0, Body) :-
     comma_list(Body0, BodyList0),
-    fix_body(BodyList0, BodyLists),
+    optional_powerset(BodyList0, BodyLists),
     maplist(comma_list, Bodies, BodyLists),
     semicolon_list(Body, Bodies).
 
+% [a, ?b, c] ~~> [[a, b, c], [a, c]]
+% [?a, ?b] ~~> [[a, b], [a], [b], []]
+optional_powerset(Superset, Powerset) :-
+    bagof(S, optional_superset(Superset, S), Powerset).
 
-% superset([_|Xs0], Xs) :-
-%     superset(Xs0, Xs).
-% superset([X|Xs0], [X|Xs]) :-
-%     superset(Xs0, Xs).
-% superset([], []).
-
-% powerset([a,b], [[a, b], [a], [b], []]).
-% powerset(Superset, Powerset) :-
-%     bagof(Subset, superset(Superset, Subset), Powerset).
-
-superset_with_holes([Idx-_|Xs0], [Idx-'$hole'|Xs]) :-
-    superset_with_holes(Xs0, Xs).
-superset_with_holes([X|Xs0], [X|Xs]) :-
-    superset_with_holes(Xs0, Xs).
-superset_with_holes([], []).
-
-indexed(L0, L) :-
-    indexed(0, L0, L).
-
-indexed(N, [X|L0], [N-X|L]) :-
+optional_superset([], []).
+optional_superset([?X|Rest0], [X|Rest]) :-
+    optional_superset(Rest0, Rest).
+optional_superset([?_|Rest0], Rest) :-
+    optional_superset(Rest0, Rest).
+optional_superset([X|Rest0], [X|Rest]) :-
+    X \= ?_,
     !,
-    N1 #= N + 1,
-    indexed(N1, L0, L).
-indexed(_, [], []).
-    
-/*
-[a, ?b, c] ~~> [[a, b, c], [a, c]]
-[?a, ?b] ~~> [[a, b], [a], [b], []]
-*/
-fix_body(Body0, Bodies) :-
-    indexed(Body0, IdxBody0),
-    convlist([In, Out]>>(In = Idx - ?Value, Out = Idx-Value), IdxBody0, Optionals),
-    convlist([In, Out]>>(In = Idx-Value, Value \= ?_, Out = Idx-Value), IdxBody0, Mandatories),
-    bagof(S, superset_with_holes(Optionals, S), HoleySubsets),
-    maplist({Mandatories}/[In,Out]>>reassemble(Mandatories, In, Out), HoleySubsets, HoleyBodies),
-    maplist(exclude(=('$hole')), HoleyBodies, Bodies).
-
-reassemble(Mandatories, Optionals, Reassembled) :-
-    append(Mandatories, Optionals, Contents),
-    same_length(Contents, Reassembled),
-    maplist({Reassembled}/[Idx-Value]>>(nth0(Idx, Reassembled, Value)), Contents).
+    optional_superset(Rest0, Rest).
