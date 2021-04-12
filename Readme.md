@@ -25,6 +25,17 @@ Sentence: the students challenged the quite unexpected statement at the conferen
 4. s(np(d(the),n1(n(students))),vp(v(challenged),np(d(the),n1(adjp(deg(quite),adj(unexpected)),n1(n(statement))),pp(p(at),np(d(the),n1(n(conference))))),s1(comp(that),s(np(d,n1(n(birds))),vp(v(fly))))))
 5. s(np(d(the),n1(n(students))),vp(v(challenged),np(d(the),n1(adjp(deg(quite),adj(unexpected)),n1(n(statement)))),pp(p(at),np(d(the),n1(n(conference)))),s1(comp(that),s(np(d,n1(n(birds))),vp(v(fly))))))
 
+Sentence: harold slept soundly
+These words are unknown: [harold,soundly]
+-  harold
+    Part-of-speech tags: [determiner,degree,adjective,noun,preposition,pronoun,name,complementizer,verb,particle,adverb,conjunction]
+    Enter part of speech (followed by '.'): name.
+-  soundly
+    Part-of-speech tags: [determiner,degree,adjective,noun,preposition,pronoun,name,complementizer,verb,particle,adverb,conjunction]
+    Enter part of speech (followed by '.'): |: adverb.
+1. s(np(nm(harold)),vp(v(slept),advp(adv(soundly))))
+
+Sentence: Could not parse
 Sentence: quit
 Quitting...
 [DB detached]

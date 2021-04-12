@@ -161,3 +161,5 @@ assert(data_word_type(wanted,verb)).
 assert(data_word_type(jesus,name)).
 assert(data_word_type(wept,verb)).
 assert(data_word_type(man,noun)).
+assert(data_word_type(harold,name)).
+assert(data_word_type(soundly,adverb)).
